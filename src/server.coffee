@@ -14,7 +14,7 @@ class Server
 			res.send """
 				var ws = window.Ws = ( window.WS || {} );
 				ws.port = #{@port};
-				ws.staticPath = #{@staticPath};
+				ws.staticPath = "#{@staticPath}";
 				if(ws.WebShellClient){
 					console.log("Have web shell already");
 					ws.ws = new ws.WebShellClient();
