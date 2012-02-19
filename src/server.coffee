@@ -12,17 +12,17 @@ class Server
 		
 		@app.get '/config.js', (req, res) =>
 			res.send """
-				var ws = ( window.WS ||= {} );
+				var ws = window.Ws = ( window.WS || {} );
 				ws.port = #{@port};
 				ws.staticPath = #{@staticPath};
 				if(ws.WebShellClient){
 					console.log("Have web shell already");
-					new ws.WebShellClient();
+					ws.ws = new ws.WebShellClient();
 				}else{
 					console.log("waiting for web shell");
 					document.onload = function(){
 						console.lot("got web shell!");
-						new WS.WebShellClient();
+						ws.ws = new WS.WebShellClient();
 					}
 				} 
 				
