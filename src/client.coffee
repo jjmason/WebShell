@@ -28,11 +28,11 @@ upgrade = (object, depth = 0, max = 5) ->
 	for key, value of object
 		nobject[key] = upgrade(value, depth+1, max)
 	return nobject
- 
+
 class WebShellClient
 	constructor :  -> 
 		@context = {}
-		@socket = io.connect "#{document.location.protocol}//#{document.location.hostname}:#{WEB_SHELL_PORT}"
+		@socket = io.connect "#{document.location.protocol}//#{document.location.hostname}:#{WS.port}"
 		@socket.on 'eval', (code, callback) =>
 			fcode = """
 				with(__ctx){
@@ -58,5 +58,5 @@ class WebShellClient
 	log : (m)-> 
 		@socket.emit 'log', m
 	
-window.webShellClient = new WebShellClient 
+(window.WS ||= {}).WebShellClient = WebShellClient 
 	

@@ -1,0 +1,7 @@
+#!/usr/bin/node
+var server 		= require(__dirname + "/../lib/server"),
+	argv   		= require('optimist')
+				 .default('static-path', __dirname + "/../lib")
+				 .default('port', 7777).argv;
+console.log("starting shell on port " + argv.port + " and static path " + argv['static-path'])
+new server.Server(argv.port, argv['static-path']).repl()

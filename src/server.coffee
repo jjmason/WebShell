@@ -5,11 +5,29 @@ dummyLogger = ->
 		logger[name] = ->
 	return logger
 class Server
-	constructor : ->
+	constructor : (@port, @staticPath = "#{__dirname}/../lib", @staticUrl = '/')->
 		@app = express.createServer()
-		@app.use express.static "#{__dirname}/static"
-		@app.listen(7777)
+		
+		@app.use express.static @staticPath
+		
+		@app.get '/config.js', (req, res) =>
+			res.send """
+				window.WS = {
+					port : #{@port},
+					staticUrl : '#{@staticPath}',
+					  
+				};
+				document.addEventListener('load', function(){
+					new WS.WebShellClient();			
+				});
+			""", {'content-type' : 'text/javascript'}
+		
+		
+		
+		@app.listen @port
+		
 		@io = require('socket.io').listen @app  
+		
 		@io.set 'logger', dummyLogger()
 		
 		@io.sockets.on 'connection', (socket)=>
@@ -30,8 +48,9 @@ class Server
 	
 	repl : ->
 		@repl = require('repl').start '> ', null, => @eval.apply @, arguments
-		
-server = new Server
-server.repl()
 
-
+exports.repl = ->
+	
+	new Server().repl()
+	
+exports.Server = Server
