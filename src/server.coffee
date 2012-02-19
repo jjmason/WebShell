@@ -12,14 +12,20 @@ class Server
 		
 		@app.get '/config.js', (req, res) =>
 			res.send """
-				window.WS = {
-					port : #{@port},
-					staticUrl : '#{@staticPath}',
-					  
-				};
-				document.addEventListener('load', function(){
-					new WS.WebShellClient();			
-				});
+				var ws = ( window.WS ||= {} );
+				ws.port = #{@port};
+				ws.staticPath = #{@staticPath};
+				if(ws.WebShellClient){
+					console.log("Have web shell already");
+					new ws.WebShellClient();
+				}else{
+					console.log("waiting for web shell");
+					document.onload = function(){
+						console.lot("got web shell!");
+						new WS.WebShellClient();
+					}
+				} 
+				
 			""", {'content-type' : 'text/javascript'}
 		
 		
@@ -50,7 +56,6 @@ class Server
 		@repl = require('repl').start '> ', null, => @eval.apply @, arguments
 
 exports.repl = ->
-	
-	new Server().repl()
+	global.server = new Server().repl()
 	
 exports.Server = Server
